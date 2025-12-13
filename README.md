@@ -29,9 +29,9 @@ Once your `.env` is configured, you can bring up ScAInner and MongoDB with `dock
 
 1. This project uses [uv](https://docs.astral.sh/uv/) to manage the environment and dependencies. Install it using it's installer via `curl -LsSf https://astral.sh/uv/install.sh | sh`
 1. Run commands in the project environment with `uv run <command>`
-    * To run the example, use `uv run python -m examples.fcpd-reston`
+    * To run the example, use `uv run python scainner/main.py`
 1. Add dependencies with `uv add <dependency>`
 1. uv manages the virtual environment for you in the `.venv/` directory. If you want to explicitly (re)create it, use `uv venv`. To activate it run `source .venv/bin/activate` in your shell.
   1. Use `uv sync` to install dependencies in a fresh venv.
-1. Install [just] to run commonly used commands.
+1. Install [just](https://github.com/casey/just) to run commonly used commands.
 1. Install ffmpeg from your OS's package manager.
