@@ -1,7 +1,7 @@
 import threading
 import time
 
-from mongo import clear_audio_older_than_30_days
+from db.mongo import clear_audio_older_than_30_days
 
 
 def audio_cleanup():

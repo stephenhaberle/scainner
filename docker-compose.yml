@@ -16,6 +16,10 @@ services:
       MONGO_DB_NAME: ${MONGO_DB_NAME}
       NOTIFICATION_PATTERNS: ${NOTIFICATION_PATTERNS}
     restart: on-failure
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
   mongodb:
     image: mongo:8
     restart: always
