@@ -1,27 +1,12 @@
 import time
-from dataclasses import dataclass
 from datetime import datetime
 from json.decoder import JSONDecodeError
 
 from cloudscraper import create_scraper
 from faster_whisper import WhisperModel
+from models.call import Call
 from requests.exceptions import ConnectionError
 from utilities import date_string_to_datetime, load_audio
-
-
-@dataclass
-class Call:
-    src_id: str
-    url: str
-    star_count: int
-    length: int
-    timestamp: datetime
-    frequency: int
-    talkgroup_number: int
-    model_size: str
-    transcription: str = None
-    transcription_time: float = None
-    audio: bytes | None = None
 
 
 class Scainner:
@@ -35,7 +20,7 @@ class Scainner:
         self.model = WhisperModel(self.model_size, compute_type=compute_type)
         self.http_client = create_scraper()
 
-    def fetch_calls(self):
+    def fetch_calls(self) -> list[Call]:
         """
         Fetch calls from the OpenMHz API.
 

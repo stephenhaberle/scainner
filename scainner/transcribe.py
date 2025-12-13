@@ -1,6 +1,5 @@
 import threading
 import time
-from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from multiprocessing import Event
 
@@ -66,7 +65,7 @@ def start(shutdown_event: Event):
                 )
                 if transcriptions_collection is not None:
                     try:
-                        transcriptions_collection.insert_one(asdict(call))
+                        transcriptions_collection.insert_one(call.model_dump())
                     except Exception as e:
                         print(f"ERROR: Failed to insert call into db {e}")
                 if NOTIFICATIONS_CLIENT:

@@ -1,3 +1,4 @@
+from api.routes import calls
 from fastapi import FastAPI
 
 
@@ -13,8 +14,6 @@ def create_app(lifespan=None):
     """
     app = FastAPI(lifespan=lifespan)
 
-    @app.get("/")
-    def read_root():
-        return {"message": "Hello, World!"}
+    app.include_router(calls.router)
 
     return app
