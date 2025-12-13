@@ -1,11 +1,16 @@
+import threading
+import time
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from multiprocessing import Event
 
-from core.audio_cleanup import start_audio_cleanup_thread
 from core.notifications import SlackNotificationsClient
 from core.scainner import Scainner
-from db.mongo import close_client, get_transcriptions_collection
+from db.mongo import (
+    clear_audio_older_than_30_days,
+    close_client,
+    get_transcriptions_collection,
+)
 from settings import application_settings
 
 NOTIFICATIONS_CLIENT = None
@@ -14,6 +19,20 @@ if application_settings.slack_webhook_url:
         application_settings.slack_webhook_url,
         application_settings.notification_patterns_list,
     )
+
+
+def audio_cleanup():
+    print("Audio cleanup thread started")
+    while True:
+        print("Cleaning up audio files over 30 days old...")
+        clear_audio_older_than_30_days()
+        time.sleep(24 * 60 * 60)  # Run every 24 hours
+
+
+def start_audio_cleanup_thread():
+    cleanup_thread = threading.Thread(target=audio_cleanup, daemon=True)
+    cleanup_thread.start()
+    return cleanup_thread
 
 
 def start(shutdown_event: Event):
