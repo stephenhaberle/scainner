@@ -1,8 +1,9 @@
 import base64
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, BeforeValidator, Field
+from pydantic import BaseModel, BeforeValidator, Field, field_serializer
+from pymongo import ASCENDING, DESCENDING
 
 # Represents an ObjectId field in the database.
 # It will be represented as a `str` on the model so that it can be serialized to JSON.
@@ -43,6 +44,30 @@ class CallResponse(Call, BaseModel):
         ..., description="The database ID of the call in MongoDB", alias="_id"
     )
 
-    def model_post_init(self, __context) -> None:
-        if self.audio is not None and isinstance(self.audio, bytes):
-            self.audio = base64.b64encode(self.audio).decode("utf-8")
+    @field_serializer("audio", when_used="json-unless-none")
+    def serialize_audio(self, value: bytes | None) -> str:
+        """Only serialize to base64 when used for JSON"""
+        if value is None:
+            return None
+        return base64.b64encode(value).decode("utf-8")
+
+
+class CallFilterParams(BaseModel):
+    """
+    Parameters for filtering calls.
+    """
+
+    limit: int = 10
+    offset: int = 0
+    order_by: Literal[
+        "timestamp",
+        "frequency",
+        "talkgroup_number",
+        "star_count",
+        "length",
+        "transcription_time",
+    ] = "timestamp"
+    order_direction: Literal["asc", "desc"] = "desc"
+
+    def get_order_direction(self) -> Literal[ASCENDING, DESCENDING]:
+        return ASCENDING if self.order_direction == "asc" else DESCENDING

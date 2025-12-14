@@ -65,7 +65,11 @@ def start(shutdown_event: Event):
                 )
                 if transcriptions_collection is not None:
                     try:
-                        transcriptions_collection.insert_one(call.model_dump())
+                        transcriptions_collection.insert_one(
+                            call.model_dump(
+                                mode="python"
+                            )  # Ensures that audio is stored as bytes and not base64 string
+                        )
                     except Exception as e:
                         print(f"ERROR: Failed to insert call into db {e}")
                 if NOTIFICATIONS_CLIENT:
