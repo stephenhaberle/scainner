@@ -1,27 +1,24 @@
-import os
 from datetime import datetime, timedelta, timezone
 
 from pymongo import MongoClient
 
-MONGO_HOSTNAME = os.getenv("MONGO_DB_HOSTNAME")
-MONGO_PORT = os.getenv("MONGO_DB_PORT")
-MONGO_PORT = MONGO_PORT if MONGO_PORT else 27017
-MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
-MONGO_DB_NAME = MONGO_DB_NAME if MONGO_DB_NAME else "scainner-db"
+from settings import mongo_settings
 
 client_singleton: MongoClient | None = None
 
 
 def is_mongo_configured():
     """Check if MongoDB is configured (hostname is set)."""
-    return MONGO_HOSTNAME
+    return mongo_settings.hostname
 
 
 def init_client():
     global client_singleton
     if not is_mongo_configured():
         return
-    client_singleton = MongoClient(f"mongodb://{MONGO_HOSTNAME}:{MONGO_PORT}/")
+    client_singleton = MongoClient(
+        f"mongodb://{mongo_settings.hostname}:{mongo_settings.port}/"
+    )
 
 
 def get_client():
@@ -40,7 +37,7 @@ def get_transcriptions_collection():
     client = get_client()
     if client is None:
         return None
-    db = client["transcriber_db"]
+    db = client[mongo_settings.db_name]
     if "transcriptions" not in db.list_collection_names():
         collection = db.create_collection("transcriptions")
         collection.create_index("timestamp")

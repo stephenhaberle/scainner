@@ -42,3 +42,20 @@ class Settings(BaseSettings):
 
 
 application_settings = Settings()
+
+
+class MongoSettings(BaseSettings):
+    """MongoDB settings loaded from environment variables."""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        env_prefix="MONGO_DB_",
+    )
+
+    hostname: str = Field(..., description="MongoDB hostname")
+    port: int = Field(default=27017, description="MongoDB port")
+    db_name: str = Field(default="scainner-db", description="MongoDB database name")
+
+
+mongo_settings = MongoSettings()
