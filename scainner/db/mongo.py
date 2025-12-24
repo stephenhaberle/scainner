@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
 from pymongo import MongoClient
-
 from settings import mongo_settings
 
 client_singleton: MongoClient | None = None

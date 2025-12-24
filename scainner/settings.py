@@ -27,6 +27,10 @@ class Settings(BaseSettings):
         default=None,
         description="Python regex patterns separated by &&& for notification triggers",
     )
+    stream_db_poll_interval: int = Field(
+        default=1,
+        description="Seconds to wait between polls for new calls in the database",
+    )
 
     @computed_field
     def notification_patterns_list(self) -> list[str] | None:
