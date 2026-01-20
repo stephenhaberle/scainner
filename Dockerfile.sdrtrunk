@@ -1,0 +1,28 @@
+FROM ubuntu:24.04
+
+ARG ARCHITECTURE=x86_64
+ARG VERSION=0.6.1
+ARG USER
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y curl unzip rtl-sdr
+
+# In order for seamless switching between sdrtrunk on the host and the container,
+# the container user must have the same name and UID as the host. SDRTrunk user preferences
+# are stored using the java preferences API files, and those filenames are based on the username.
+# The host's java preferences are mounted into the container, so that the container can use the host's preferences.
+# SDTrunk does not expose many user preferences in headless mode making this a necessity.
+# Ubuntu images from 24.04 onwards include the user 'ubuntu' with the same UID as the host by default.
+RUN usermod -l ${USER} ubuntu && \
+    groupmod -n ${USER} ubuntu && \
+    usermod -d /home/${USER} -m ${USER}
+
+RUN curl -L https://github.com/DSheirer/sdrtrunk/releases/download/v${VERSION}/sdr-trunk-linux-${ARCHITECTURE}-v${VERSION}.zip -o /tmp/sdr-trunk-linux-${ARCHITECTURE}-v${VERSION}.zip && \
+unzip /tmp/sdr-trunk-linux-${ARCHITECTURE}-v${VERSION}.zip -d /opt && \
+rm /tmp/sdr-trunk-linux-${ARCHITECTURE}-v${VERSION}.zip && \
+mv /opt/sdr-trunk-linux-${ARCHITECTURE}-v${VERSION} /opt/sdrtrunk
+
+RUN apt-get remove -y curl unzip
+
+USER ${USER}
+
+ENTRYPOINT [ "/opt/sdrtrunk/bin/sdr-trunk" ]

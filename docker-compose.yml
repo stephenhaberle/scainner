@@ -24,5 +24,18 @@ services:
     volumes:
       - mongodbdata:/data/db
 
+  sdrtrunk:
+    build:
+      context: .
+      dockerfile: Dockerfile.sdrtrunk
+      args:
+        USER: ${USER}
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    volumes:
+      - /run/udev/data:/run/udev/data
+      - ~/SDRTrunk:/home/${USER}/SDRTrunk # Default application root.
+      - ~/.java:/home/${USER}/.java # Location where java preferences API stores files. Used by SDRTrunk.
+
 volumes:
   mongodbdata:
